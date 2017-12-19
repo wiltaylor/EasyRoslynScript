@@ -82,7 +82,6 @@ Task("EasyRoslynScript.UpdateVersion")
         XmlPoke(file, "/Project/PropertyGroup/Version", version.SemVer);
         XmlPoke(file, "/Project/PropertyGroup/AssemblyVersion", version.AssemblySemVer);
         XmlPoke(file, "/Project/PropertyGroup/FileVersion", version.AssemblySemVer);
-        XmlPoke(file, "/Project/PropertyGroup/PackageReleaseNotes", version.FullBuildMetaData);
     });
 
 Task("EasyRoslynScript.Clean.Main")

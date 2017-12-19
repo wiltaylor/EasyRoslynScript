@@ -12,7 +12,7 @@ To install the package you can search for it in the NuGet Package Manager or ins
 Install-Package EasyRoslynScript
 ```
 
-#Usage
+# Usage
 First thing you need to do to use this library is create a bootstrap Script PreCompile Handler.
 The purpose of this class is to specify what assemblies you want to expose to the script engine and also
 what default namespaces to use.
