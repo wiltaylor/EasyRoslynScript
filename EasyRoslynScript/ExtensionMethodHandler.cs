@@ -72,7 +72,7 @@ namespace EasyRoslynScript
             if (type.IsGenericType)
             {
                 return type.Namespace + "." + type.Name.Substring(0, type.Name.Length - 2) + "<" +
-                       string.Join(",", type.GenericTypeArguments.Select(t => t.Name)) + ">";
+                       string.Join(",", type.GenericTypeArguments.Select(TypeToString)) + ">";
             }
 
             return type.Namespace + "." + type.Name;
