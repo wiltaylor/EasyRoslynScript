@@ -31,12 +31,12 @@ namespace EasyRoslynScript
                         select m)
                     {
 
-                        var returnType = method.ReturnType.Name;
+                        var returnType = TypeToString(method.ReturnType);
 
-                        if (returnType == "Void")
+                        if (returnType == "System.Void")
                             returnType = "void";
 
-                        var parms = string.Join(",", method.GetParameters().Skip(1).Select(p => $"{p.ParameterType.Name} {p.Name}"));
+                        var parms = string.Join(",", method.GetParameters().Skip(1).Select(p => $"{TypeToString(p.ParameterType)} {p.Name}"));
                         var firstParmName = method.GetParameters()[0].Name;
                         var passParms = string.Join(",", method.GetParameters().Select(p => $"{p.Name}"));
                        
@@ -65,6 +65,17 @@ namespace EasyRoslynScript
             sb.AppendLine();
 
             return sb.ToString();
+        }
+
+        private string TypeToString(Type type)
+        {
+            if (type.IsGenericType)
+            {
+                return type.Namespace + "." + type.Name.Substring(0, type.Name.Length - 2) + "<" +
+                       string.Join(",", type.GenericTypeArguments.Select(t => t.Name)) + ">";
+            }
+
+            return type.Namespace + "." + type.Name;
         }
 
         public IEnumerable<Assembly> References => new Assembly[] {};
