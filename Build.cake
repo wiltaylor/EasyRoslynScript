@@ -9,6 +9,7 @@ var SolutionFile = RepoRootFolder + "/EasyRoslynScript.sln";
 var ToolsFolder = RepoRootFolder + "/Tools";
 
 var nugetAPIKey = EnvironmentVariable("NUGETAPIKEY");
+var nugetPersonalAPIKey = EnvironmentVariable("NUGETPERSONALAPIKEY");
 
 var target = Argument("target", "Default");
 
@@ -66,7 +67,8 @@ Task("EasyRoslynScript.Build")
 Task("EasyRoslynScript.Test");
 
 Task("EasyRoslynScript.Deploy")
-    .IsDependentOn("EasyRoslynScript.Deploy.NuGet");
+    .IsDependentOn("EasyRoslynScript.Deploy.NuGet")
+    .IsDependentOn("EasyRoslynScript.Deploy.NuGet.Personal");
 
 Task("EasyRoslynScript.DotNetRestore")
     .Does(() => {
@@ -110,6 +112,18 @@ Task("EasyRoslynScript.Deploy.NuGet")
             ApiKey = nugetAPIKey
         });
     });
+
+Task("EasyRoslynScript.Deploy.NuGet.Personal")
+    .Does(() => {
+        NuGetPush(RepoRootFolder + "/EasyRoslynScript/Bin/Release/EasyRoslynScript." + version.SemVer + ".nupkg",
+        new NuGetPushSettings{
+            Source = "https://www.myget.org/F/win32io/api/v2/package",
+            ApiKey = nugetPersonalAPIKey
+        });
+    });
+
+
+    
 
 
 /*****************************************************************************************************
