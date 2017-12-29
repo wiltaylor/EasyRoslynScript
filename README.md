@@ -80,6 +80,10 @@ You will also notice that the ExecuteMethods above are async tasks. This will al
 # NuGet Support
 If you want to add NuGet Support to your scripts you can add the EasyRoslynScript.NuGet package and pass it into the constructor for the script runner.
 
+```
+Install-Package EasyRoslynScript.NuGet
+```
+
 First thing you need to do is create a settings object for it.
 
 ```
