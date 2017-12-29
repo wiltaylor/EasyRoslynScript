@@ -9,7 +9,6 @@ var SolutionFile = RepoRootFolder + "/EasyRoslynScript.sln";
 var ToolsFolder = RepoRootFolder + "/Tools";
 
 var nugetAPIKey = EnvironmentVariable("NUGETAPIKEY");
-var nugetPersonalAPIKey = EnvironmentVariable("NUGETPERSONALAPIKEY");
 
 var target = Argument("target", "Default");
 
@@ -28,17 +27,20 @@ Task("Default")
     .IsDependentOn("Build");
 
 Task("Restore")
-    .IsDependentOn("EasyRoslynScript.Restore");
+    .IsDependentOn("EasyRoslynScript.Restore")
+    .IsDependentOn("EasyRoslynScript_NuGet.Restore");
 
 Task("Clean");
 
 Task("Build")
-    .IsDependentOn("EasyRoslynScript.Build");
+    .IsDependentOn("EasyRoslynScript.Build")
+    .IsDependentOn("EasyRoslynScript_NuGet.Build");
 
 Task("Test");
 
 Task("Deploy")
-    .IsDependentOn("EasyRoslynScript.Deploy");
+    .IsDependentOn("EasyRoslynScript.Deploy")
+    .IsDependentOn("EasyRoslynScript_NuGet.Deploy");
 
 Task("Version")
     .Does(() => {
@@ -67,8 +69,7 @@ Task("EasyRoslynScript.Build")
 Task("EasyRoslynScript.Test");
 
 Task("EasyRoslynScript.Deploy")
-    .IsDependentOn("EasyRoslynScript.Deploy.NuGet")
-    .IsDependentOn("EasyRoslynScript.Deploy.NuGet.Personal");
+    .IsDependentOn("EasyRoslynScript.Deploy.NuGet");
 
 Task("EasyRoslynScript.DotNetRestore")
     .Does(() => {
@@ -112,19 +113,66 @@ Task("EasyRoslynScript.Deploy.NuGet")
             ApiKey = nugetAPIKey
         });
     });
+    
+/*****************************************************************************************************
+EasyRoslynScript.NuGet
+*****************************************************************************************************/
+Task("EasyRoslynScript_NuGet.Clean")
+    .IsDependentOn("EasyRoslynScript_NuGet.Clean.Main");
 
-Task("EasyRoslynScript.Deploy.NuGet.Personal")
+Task("EasyRoslynScript_NuGet.Restore")
+    .IsDependentOn("EasyRoslynScript_NuGet.DotNetRestore");    
+
+Task("EasyRoslynScript_NuGet.Build")
+    .IsDependentOn("EasyRoslynScript_NuGet.Build.Compile");
+
+Task("EasyRoslynScript_NuGet.Test");
+
+Task("EasyRoslynScript_NuGet.Deploy")
+    .IsDependentOn("EasyRoslynScript_NuGet.Deploy.NuGet");
+
+Task("EasyRoslynScript_NuGet.DotNetRestore")
     .Does(() => {
-        NuGetPush(RepoRootFolder + "/EasyRoslynScript/Bin/Release/EasyRoslynScript." + version.SemVer + ".nupkg",
-        new NuGetPushSettings{
-            Source = "https://www.myget.org/F/win32io/api/v2/package",
-            ApiKey = nugetPersonalAPIKey
-        });
+        var proc = StartProcess("dotnet", new ProcessSettings { Arguments = "restore", WorkingDirectory = RepoRootFolder + "/EasyRoslynScript.NuGet"  });
+
+        if(proc != 0)
+            throw new Exception("dotnet didn't return 0 it returned " + proc);
     });
 
+Task("EasyRoslynScript_NuGet.UpdateVersion")
+    .Does(() => {
+        var file = RepoRootFolder + "/EasyRoslynScript.NuGet/EasyRoslynScript.NuGet.csproj";
+        XmlPoke(file, "/Project/PropertyGroup/Version", version.SemVer);
+        XmlPoke(file, "/Project/PropertyGroup/AssemblyVersion", version.AssemblySemVer);
+        XmlPoke(file, "/Project/PropertyGroup/FileVersion", version.AssemblySemVer);
+    });
 
-    
+Task("EasyRoslynScript_NuGet.Clean.Main")
+    .Does(() => 
+    {
+        CleanDirectory(RepoRootFolder + "/EasyRoslynScript.NuGet/Bin");
+    });
 
+Task("EasyRoslynScript_NuGet.Build.Compile")
+    .IsDependentOn("EasyRoslynScript_NuGet.UpdateVersion")
+    .IsDependentOn("EasyRoslynScript_NuGet.Clean.Main")
+    .Does(() => {
+        MSBuild(SolutionFile, config =>
+            config.SetVerbosity(Verbosity.Minimal)
+            .SetConfiguration("Release")
+            .UseToolVersion(MSBuildToolVersion.VS2017)
+            .SetMSBuildPlatform(MSBuildPlatform.Automatic)
+            .SetPlatformTarget(PlatformTarget.MSIL));
+        });
+
+Task("EasyRoslynScript_NuGet.Deploy.NuGet")
+    .Does(() => {
+        NuGetPush(RepoRootFolder + "/EasyRoslynScript/Bin/Release/EasyRoslynScript.NuGet." + version.SemVer + ".nupkg",
+        new NuGetPushSettings{
+            Source = "https://api.nuget.org/v3/index.json",
+            ApiKey = nugetAPIKey
+        });
+    });
 
 /*****************************************************************************************************
 End of script

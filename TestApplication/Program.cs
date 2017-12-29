@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using EasyRoslynScript;
+using EasyNuGet;
+using EasyRoslynScript.NuGet;
 
 namespace TestApplication
 {
@@ -8,11 +11,28 @@ namespace TestApplication
     {
         static void Main(string[] args)
         {
-            var runner = new ScriptRunner(new IScriptPreCompileHandler[] { new ScriptBootStrap(), new ExtensionMethodHandler()});
+            var loc = new ServiceLocator();
+            var search = new PackageSearcher(loc);
+            var downloader = new PackageDownloader(loc);
+
+            var nugetpreproc = new NugetPreProcessor(new NuGetProcessorSettings(), downloader, search);
+
+            var runner = new ScriptRunner(new IScriptPreCompileHandler[] { new ScriptBootStrap(), new ExtensionMethodHandler(), nugetpreproc});
 
             try
             {
-                runner.ExecuteString("Echo(Sum(1, 2).ToString());").Wait();
+                var script = new StringBuilder();
+
+                script.AppendLine("#n nuget:?package=semver");
+                script.AppendLine("using Semver;");
+                script.AppendLine("Echo(Sum(1, 2).ToString());");
+                script.AppendLine("var v = SemVersion.Parse(\"1.1.0-rc.1+nightly.2345\");");
+                script.AppendLine("Echo(v.ToString());");
+                runner.ExecuteString(script.ToString()).Wait();
+
+
+                foreach(var asm in AppDomain.CurrentDomain.GetAssemblies())
+                    Console.WriteLine($"{asm.CodeBase} - {asm.FullName}");
             }
             catch (Exception e)
             {
