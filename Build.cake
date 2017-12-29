@@ -167,7 +167,7 @@ Task("EasyRoslynScript_NuGet.Build.Compile")
 
 Task("EasyRoslynScript_NuGet.Deploy.NuGet")
     .Does(() => {
-        NuGetPush(RepoRootFolder + "/EasyRoslynScript/Bin/Release/EasyRoslynScript.NuGet." + version.SemVer + ".nupkg",
+        NuGetPush(RepoRootFolder + "/EasyRoslynScript.NuGet/Bin/Release/EasyRoslynScript.NuGet." + version.SemVer + ".nupkg",
         new NuGetPushSettings{
             Source = "https://api.nuget.org/v3/index.json",
             ApiKey = nugetAPIKey

@@ -1,9 +1,11 @@
 # Easy Roslyn Script
-This library is a simple Roslyn script runner.
+This project makes it easier to host Roslyn script in your application with a more extensible interface.
 
-I created this project to have a common script runner between all of my side projects. The main thing that makes this project different is the way it loads scripts. You can create pre-processors which allow you to modify the script before it is executed.
+Main features are as follows:
 
-I have also added the ability to add new methods via Extension methods, this makes it much more Dependency Injection friendly.
+* Ability to create script pre-processors that process the source code before execution.
+* Ability to define more script functions via Extension methods instead of a single shared global object.
+* Ability to reference nuget packages for dependencies. 
 
 # Installation
 To install the package you can search for it in the NuGet Package Manager or install from the package console with: 
