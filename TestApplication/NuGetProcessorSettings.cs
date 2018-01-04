@@ -9,7 +9,7 @@ namespace TestApplication
 {
     public class NuGetProcessorSettings : INuGetScriptSettings
     {
-        public string PackageDir  => "D:\\Sandpit\\testbucketofdoom";
+        public string PackageDir  => "D:\\Sandpit\\testbucketofdoom2";
         public IEnumerable<string> SupportedPlatforms => new[]
         {
             "net461", "net46", "net452", "net451", "net45", "net403", "net40",

@@ -55,6 +55,18 @@ namespace EasyRoslynScript.NuGet
                         continue;
                     }
 
+                    if (!string.IsNullOrEmpty(req.FilePath))
+                    {
+                        var spec = _packageDownloader.DownloadNuSpecFromFile(req.FilePath);
+
+                        if (!_packageDownloader.IsInstalled(spec.Id, spec.Version, _settings.PackageDir))
+                        {
+                            _packageDownloader.DownloadFromFile(req.FilePath, _settings.PackageDir);
+                        }
+
+                        continue;
+                    }
+
                     var pkg = GetPackageRequirements(new List<PackageRequirement>(), req.Name, req.Version, req.Source, req.PreRelease, req.Framework);
 
                     foreach (var p in pkg)
@@ -95,8 +107,7 @@ namespace EasyRoslynScript.NuGet
                     Name = name,
                     PreRelease = preRelease,
                     Source = source,
-                    Version = version
-                });
+                    Version = version                });
 
 
             var pkg = default(Package);

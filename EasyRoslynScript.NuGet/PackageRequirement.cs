@@ -46,6 +46,10 @@ namespace EasyRoslynScript.NuGet
                     case "nodepresolve":
                         pack.NoDepResolve = true;
                         break;
+                    case "file":
+                        pack.FilePath = p.Value;
+                        break;
+
                 }
             }
 
@@ -58,6 +62,7 @@ namespace EasyRoslynScript.NuGet
         public bool PreRelease { get; set; }
         public string Framework { get; set; }
         public bool NoDepResolve { get; set; }
+        public string FilePath { get; set; }
 
     }
 }

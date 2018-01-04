@@ -23,7 +23,7 @@ namespace TestApplication
             {
                 var script = new StringBuilder();
 
-                script.AppendLine("#n nuget:?package=semver");
+                script.AppendLine("#n nuget:?file=D:\\Sandpit\\testbucketofdoom\\semver\\2.0.4\\semver.2.0.4.nupkg");
                 script.AppendLine("using Semver;");
                 script.AppendLine("Echo(Sum(1, 2).ToString());");
                 script.AppendLine("var v = SemVersion.Parse(\"1.1.0-rc.1+nightly.2345\");");
