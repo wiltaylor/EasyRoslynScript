@@ -69,6 +69,7 @@ Task("EasyRoslynScript.Build")
 Task("EasyRoslynScript.Test");
 
 Task("EasyRoslynScript.Deploy")
+    .IsDependentOn("EasyRoslynScript.Build")
     .IsDependentOn("EasyRoslynScript.Deploy.NuGet");
 
 Task("EasyRoslynScript.DotNetRestore")
