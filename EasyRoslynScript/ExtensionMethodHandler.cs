@@ -30,13 +30,12 @@ namespace EasyRoslynScript
                         where m.GetParameters()[0].ParameterType == typeof(IScriptContext)
                         select m)
                     {
-
                         var returnType = TypeToString(method.ReturnType);
 
                         if (returnType == "System.Void")
                             returnType = "void";
 
-                        var parms = string.Join(",", method.GetParameters().Skip(1).Select(p => $"{TypeToString(p.ParameterType)} {p.Name}"));
+                        var parms = string.Join(",", method.GetParameters().Skip(1).Select(p => $"{ParamIfSet(p)}{TypeToString(p.ParameterType)} {p.Name}"));
                         var firstParmName = method.GetParameters()[0].Name;
                         var passParms = string.Join(",", method.GetParameters().Select(p => $"{p.Name}"));
                        
@@ -65,6 +64,11 @@ namespace EasyRoslynScript
             sb.AppendLine();
 
             return sb.ToString();
+        }
+
+        private string ParamIfSet(ParameterInfo info)
+        {
+            return info.GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0 ? "params " : "";
         }
 
         private string TypeToString(Type type)

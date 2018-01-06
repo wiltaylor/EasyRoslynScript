@@ -28,6 +28,7 @@ namespace TestApplication
                 script.AppendLine("Echo(Sum(1, 2).ToString());");
                 script.AppendLine("var v = SemVersion.Parse(\"1.1.0-rc.1+nightly.2345\");");
                 script.AppendLine("Echo(v.ToString());");
+                script.AppendLine("Echo(\"Hey {0} {1}\", \"1\", 2);");
                 runner.ExecuteString(script.ToString()).Wait();
 
 
@@ -57,6 +58,12 @@ namespace TestApplication
         {
             Console.WriteLine(message);
             
+        }
+
+        public static void Echo(this IScriptContext context, string message, params object[] args)
+        {
+            Console.WriteLine(message, args);
+
         }
 
         public static int Sum(this IScriptContext context, int num1, int num2)

@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.1.5</Version>
+    <Version>0.1.6</Version>
     <Authors>Wil Taylor</Authors>
     <Company>Wil Taylor</Company>
     <Description>Simple library that allows you to execute Roslyn Scripts.</Description>
     <Copyright>Wil Taylor 2017</Copyright>
     <PackageProjectUrl>https://github.com/wiltaylor/EasyRoslynScript</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/wiltaylor/EasyRoslynScript/LICENSE.md</PackageLicenseUrl>
-    <AssemblyVersion>0.1.5.0</AssemblyVersion>
+    <AssemblyVersion>0.1.6.0</AssemblyVersion>
     <PackageTags>Roslyn Script</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <FileVersion>0.1.5.0</FileVersion>
+    <FileVersion>0.1.6.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
