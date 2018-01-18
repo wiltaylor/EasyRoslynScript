@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using EasyRoslynScript.NuGet;
 
 namespace TestApplication
@@ -16,5 +12,7 @@ namespace TestApplication
             "netstandard1.0", "netstandard1.1", "netstandard1.2", "netstandard1.3",
             "netstandard1.4", "netstandard1.5", "netstandard1.6", "netstandard2.0"
         };
+
+        public string DefaultRepository => "https://www.myget.org/F/fcepacks/api/v3/index.json";
     }
 }

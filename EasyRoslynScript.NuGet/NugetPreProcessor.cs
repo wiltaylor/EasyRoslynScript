@@ -22,6 +22,8 @@ namespace EasyRoslynScript.NuGet
             _settings = settings;
             _packageDownloader = packageDownloader;
             _packageSearcher = packageSearcher;
+
+
         }
 
         private string ReplaceTokens(string text)
@@ -67,7 +69,7 @@ namespace EasyRoslynScript.NuGet
                         continue;
                     }
 
-                    var pkg = GetPackageRequirements(new List<PackageRequirement>(), req.Name, req.Version, req.Source, req.PreRelease, req.Framework);
+                    var pkg = GetPackageRequirements(new List<PackageRequirement>(), req.Name, req.Version, req.Source, req.PreRelease, req.Framework, req.NoDepResolve);
 
                     foreach (var p in pkg)
                     {
@@ -99,14 +101,14 @@ namespace EasyRoslynScript.NuGet
             return sb.ToString();
         }
 
-        private List<PackageRequirement> GetPackageRequirements(List<PackageRequirement> requirements, string name, string version, string source, bool preRelease, string framework)
+        private List<PackageRequirement> GetPackageRequirements(List<PackageRequirement> requirements, string name, string version, string source, bool preRelease, string framework, bool nodeps = false)
         {
             if(requirements.All(r => r.Name != name))
                 requirements.Add(new PackageRequirement
                 {
                     Name = name,
                     PreRelease = preRelease,
-                    Source = source,
+                    Source = source ?? _settings.DefaultRepository,
                     Version = version                });
 
 
@@ -172,10 +174,29 @@ namespace EasyRoslynScript.NuGet
                     .FirstOrDefault(s => String.Equals(s.Version, version, StringComparison.CurrentCultureIgnoreCase));
             }
 
-            requirements.First(r => r.Name == pkg.Id).Version = pkg.Version;
+            try
+            {
+                requirements.FirstOrDefault(r => r.Name == pkg.Id).Version = pkg.Version;
+            }
+            catch (Exception e)
+            {
+                throw new NuGetException($"Can't resolve package {name} {version}", e);
+            }
 
+            var spec = default(NuSpec);
+            try
+            {
+                spec = _packageDownloader.DownloadNuSpec(pkg.Id, pkg.Version);
+            }
+            catch
+            {
+                _packageDownloader.DownloadArchive(pkg, $"{Environment.GetEnvironmentVariable("temp")}\\{pkg.Id}-{pkg.Version}.nupkg");
+                spec = _packageDownloader.DownloadNuSpecFromFile(
+                    $"{Environment.GetEnvironmentVariable("temp")}\\{pkg.Id}-{pkg.Version}.nupkg");
+            }
 
-            var spec = _packageDownloader.DownloadNuSpec(pkg.Id, pkg.Version);
+            if (nodeps)
+                return requirements;
 
             foreach (var dep in spec.Dependancies)
             {
