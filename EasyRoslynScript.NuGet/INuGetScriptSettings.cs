@@ -7,5 +7,6 @@ namespace EasyRoslynScript.NuGet
         string PackageDir { get; }
         IEnumerable<string> SupportedPlatforms { get; }
         string DefaultRepository { get; }
+        IEnumerable<string> BlockedPackages { get; }
     }
 }

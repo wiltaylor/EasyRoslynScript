@@ -224,6 +224,9 @@ namespace EasyRoslynScript.NuGet
 
             foreach (var dep in spec.Dependancies)
             {
+                if(_settings.BlockedPackages.Any(p => string.Equals(p, dep.Id, StringComparison.CurrentCultureIgnoreCase)))
+                    continue;
+
                 if (requirements.All(r => r.Name != dep.Id))
                 {
                     requirements.Add(new PackageRequirement
@@ -246,7 +249,11 @@ namespace EasyRoslynScript.NuGet
                 
                 if (!groupMatch) continue;
 
-                foreach (var dep in @group.Dependancies)
+                foreach (var dep in group.Dependancies)
+                {
+                    if (_settings.BlockedPackages.Any(p => string.Equals(p, dep.Id, StringComparison.CurrentCultureIgnoreCase)))
+                        continue;
+
                     if (requirements.All(r => r.Name != dep.Id))
                     {
                         requirements.Add(new PackageRequirement
@@ -260,6 +267,7 @@ namespace EasyRoslynScript.NuGet
                         requirements = GetPackageRequirements(requirements, dep.Id, dep.Version, source,
                             preRelease, framework);
                     }
+                }
             }
 
             return requirements;

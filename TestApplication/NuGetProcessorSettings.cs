@@ -14,5 +14,6 @@ namespace TestApplication
         };
 
         public string DefaultRepository => "https://www.myget.org/F/fcepacks/api/v3/index.json";
+        public IEnumerable<string> BlockedPackages => new[] { "NETStandard.Library", "Microsoft.Win32.Primitives", "Microsoft.NETCore.Targets", "Microsoft.NETCore.Platforms" };
     }
 }
