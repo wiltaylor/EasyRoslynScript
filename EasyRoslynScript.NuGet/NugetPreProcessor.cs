@@ -67,7 +67,7 @@ namespace EasyRoslynScript.NuGet
                         }
 
                         var libPath = $"{_settings.PackageDir}\\{spec.Id}\\{spec.Version}\\lib";
-
+                        
 
                         var frameworkdir = Directory.GetDirectories(libPath).FirstOrDefault(d => req.Framework == null ? _settings.SupportedPlatforms.Contains(Path.GetFileName(d)) : d.Contains(req.Framework));
 
@@ -84,6 +84,12 @@ namespace EasyRoslynScript.NuGet
 
                     foreach (var p in pkg)
                     {
+                        //Checking if package is already loaded into assembly.
+                        //This should help reduce the extra junk downloaded like .netstandard libraries etc.
+                        if(AppDomain.CurrentDomain.GetAssemblies()
+                            .FirstOrDefault(a => a.FullName.ToLower().Contains(p.Name.ToLower())) != null)
+                            continue;
+
                         if (!_packageDownloader.IsInstalled(p.Name, p.Version, _settings.PackageDir))
                         {
                             _packageDownloader.Download(p.Name, p.Version, _settings.PackageDir);
@@ -91,6 +97,10 @@ namespace EasyRoslynScript.NuGet
 
                         var libPath = $"{_settings.PackageDir}\\{p.Name}\\{p.Version}\\lib";
 
+                        //This helps skip meta packages like NETStandard.Library.
+                        if (!Directory.Exists(libPath))
+                            continue;
+                        
 
                         var frameworkdir = Directory.GetDirectories(libPath).FirstOrDefault(d => req.Framework == null ? _settings.SupportedPlatforms.Contains(Path.GetFileName(d)) : d.Contains(req.Framework));
 
