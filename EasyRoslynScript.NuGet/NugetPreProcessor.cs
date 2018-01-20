@@ -66,6 +66,17 @@ namespace EasyRoslynScript.NuGet
                             _packageDownloader.DownloadFromFile(req.FilePath, _settings.PackageDir);
                         }
 
+                        var libPath = $"{_settings.PackageDir}\\{spec.Id}\\{spec.Version}\\lib";
+
+
+                        var frameworkdir = Directory.GetDirectories(libPath).FirstOrDefault(d => req.Framework == null ? _settings.SupportedPlatforms.Contains(Path.GetFileName(d)) : d.Contains(req.Framework));
+
+                        if (string.IsNullOrEmpty(frameworkdir))
+                            continue;
+
+                        foreach (var dll in Directory.GetFiles(frameworkdir, "*.dll", SearchOption.AllDirectories))
+                            _assemblies.Add(Assembly.LoadFile(dll));
+
                         continue;
                     }
 
