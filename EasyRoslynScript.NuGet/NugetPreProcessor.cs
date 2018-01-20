@@ -68,6 +68,9 @@ namespace EasyRoslynScript.NuGet
 
                         var libPath = $"{_settings.PackageDir}\\{spec.Id}\\{spec.Version}\\lib";
                         
+                        //skip packages that don't contain any dll files.
+                        if(!Directory.Exists(libPath))
+                            continue;
 
                         var frameworkdir = Directory.GetDirectories(libPath).FirstOrDefault(d => req.Framework == null ? _settings.SupportedPlatforms.Contains(Path.GetFileName(d)) : d.Contains(req.Framework));
 
